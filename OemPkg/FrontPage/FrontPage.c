@@ -83,7 +83,7 @@ BOOLEAN                           mResetRequired;
 FRONT_PAGE_AUTH_TOKEN_PROTOCOL   *mFrontPageAuthTokenProtocol = NULL;
 DFCI_AUTHENTICATION_PROTOCOL     *mAuthProtocol = NULL;
 EFI_HII_CONFIG_ROUTING_PROTOCOL  *mHiiConfigRouting;
-DFCI_SETTING_ACCESS_PROTOCOL     *mSettingAccess;
+//DFCI_SETTING_ACCESS_PROTOCOL     *mSettingAccess;
 DFCI_AUTH_TOKEN                   mAuthToken;
 
 extern EFI_HII_HANDLE gStringPackHandle;
@@ -189,7 +189,7 @@ EFI_STATUS GetAndDisplayBitmap(EFI_GUID *FileGuid, UINTN XCoord, BOOLEAN XCoordA
   @retval   EFI_NOT_FOUND     If the target string is not found.
 
 **/
-STATIC
+/* STATIC
 EFI_STATUS
 GetOptionalStringByIndex (
   IN  CHAR8  *OptionalStrStart,
@@ -225,7 +225,7 @@ GetOptionalStringByIndex (
   }
 
   return EFI_SUCCESS;
-}
+}*/
 
 /**
   Updates HII display strings based on associated EFI variable state.
@@ -235,7 +235,7 @@ GetOptionalStringByIndex (
 @retval     EFI_SUCCESS     Updated display strings.
 
 **/
-STATIC
+/*STATIC
 EFI_STATUS
 UpdateDisplayStrings (
   IN EFI_HII_HANDLE HiiHandle
@@ -303,7 +303,7 @@ UpdateDisplayStrings (
   }
 
   return Status;
-}
+}*/
 
 /**
 Function to populate the PC INFO firmware version form with the current fw versions
@@ -565,7 +565,6 @@ InitializeFrontPage (
             return Status;
         }
 
-
         //
         // Install Device Path Protocol and Config Access protocol to driver handle
         //
@@ -600,8 +599,8 @@ InitializeFrontPage (
 
     // Update PC information display strings from EFI variables.
     //
-    UpdateDisplayStrings (HiiHandle);
-    UpdateFormWithFirmwareVersions (HiiHandle);
+    //UpdateDisplayStrings(HiiHandle);
+    UpdateFormWithFirmwareVersions(HiiHandle);
     UpdateSecureBootStatusStrings (FALSE);
 
     return Status;
@@ -1512,7 +1511,7 @@ UefiMain(IN EFI_HANDLE        ImageHandle,
 
     mResetRequired = FALSE;
 
-    Status = gBS->LocateProtocol(&gDfciSettingAccessProtocolGuid,
+    /*Status = gBS->LocateProtocol(&gDfciSettingAccessProtocolGuid,
         NULL,
         (VOID **)&mSettingAccess
         );
@@ -1520,7 +1519,7 @@ UefiMain(IN EFI_HANDLE        ImageHandle,
     {
         ASSERT_EFI_ERROR(Status);
         DEBUG((DEBUG_ERROR, "%a Couldn't locate system setting access protocol\n", __FUNCTION__));
-    }
+    }*/
     // Force-connect all controllers.
     //
     EfiBootManagerConnectAll();

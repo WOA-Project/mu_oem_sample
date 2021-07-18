@@ -45,7 +45,7 @@
 
 extern EFI_HII_HANDLE                       gStringPackHandle;
 extern BOOLEAN                              mResetRequired;
-extern DFCI_SETTING_ACCESS_PROTOCOL         *mSettingAccess;
+//extern DFCI_SETTING_ACCESS_PROTOCOL         *mSettingAccess;
 extern UINTN                                mAuthToken;
 extern EDKII_VARIABLE_POLICY_PROTOCOL             *mVariablePolicyProtocol;
 
@@ -239,7 +239,7 @@ SetSystemPassword (IN  EFI_IFR_TYPE_VALUE           *Value,
     CHAR16          *PasswordBuffer = NULL;    // This will be allocated by PasswordDialog(). Needs to be tracked, wiped, and freed.
     PASSWORD_HASH   PasswordHash;
     UINTN           PasswordHashSize;
-    DFCI_SETTING_FLAGS Flags = 0;
+    //DFCI_SETTING_FLAGS Flags = 0;
 
     DEBUG((DEBUG_INFO, "INFO: [FP] SetSystemPassword: ENTER\r\n"));
 
@@ -319,13 +319,13 @@ SetSystemPassword (IN  EFI_IFR_TYPE_VALUE           *Value,
 
             if (!EFI_ERROR(Status))
             {
-                Status = mSettingAccess->Set(mSettingAccess,
+                /*Status = mSettingAccess->Set(mSettingAccess,
                                              DFCI_SETTING_ID__PASSWORD,
                                              &mAuthToken,
                                              DFCI_SETTING_TYPE_PASSWORD,
                                              PasswordHashSize,
                                              (VOID *) PasswordHash,
-                                             &Flags);
+                                             &Flags);*/
                 FreePool (PasswordHash);
             }
 
@@ -462,7 +462,7 @@ HandleSecureBootChange (
     SWM_MB_RESULT   SwmResult;
     UINTN           SelectedIndex;
     UINT8           IndexSetValue;
-    DFCI_SETTING_FLAGS Flags = 0;
+    //DFCI_SETTING_FLAGS Flags = 0;
     UINTN           OptionsCount = MS_SB_CONFIG_COUNT;
 
     //
@@ -494,13 +494,13 @@ HandleSecureBootChange (
     {
         mVariablePolicyProtocol->DisableVariablePolicy ();
 
-        Status = mSettingAccess->Set(mSettingAccess,
+        /*Status = mSettingAccess->Set(mSettingAccess,
             DFCI_SETTING_ID__SECURE_BOOT_KEYS_ENUM,
             &mAuthToken,
             DFCI_SETTING_TYPE_SECUREBOOTKEYENUM,
             sizeof(IndexSetValue),
             &IndexSetValue,
-            &Flags);
+            &Flags);*/
         //
         // If successful, update the display.
         if (!EFI_ERROR( Status ))
