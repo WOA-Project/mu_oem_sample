@@ -16,7 +16,7 @@
   INF_VERSION                    = 0x00010017
   BASE_NAME                      = DeviceStatePei
   FILE_GUID                      = 974931ef-cf18-4b45-bcbf-4b62d5c9a061
-  MODULE_TYPE                    = PEIM
+  MODULE_TYPE                    = DXE_DRIVER
   VERSION_STRING                 = 1.0
   ENTRY_POINT                    = DeviceStatePeiEntry
 
@@ -28,18 +28,8 @@
   MdeModulePkg/MdeModulePkg.dec
 
 [LibraryClasses]
-  PeimEntryPoint
-  PeiServicesLib
-  DebugLib
+  UefiDriverEntryPoint
   DeviceStateLib
 
-[Ppis]
-  gEfiPeiReadOnlyVariable2PpiGuid
-
-[Guids]
-  gEfiGlobalVariableGuid
-
-[Pcd]
-
 [Depex]
-  gEfiPeiReadOnlyVariable2PpiGuid     # Needed to query variable storage
+  TRUE
