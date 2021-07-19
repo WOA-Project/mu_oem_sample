@@ -12,9 +12,44 @@
 
   SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
-#include <PiDxe.h>
-#include <Library/UefiBootServicesTableLib.h>
+#include <PiPei.h>
+#include <Library/DebugLib.h>
 #include <Library/DeviceStateLib.h>
+#include <Library/PeiServicesLib.h>
+
+#include <Ppi/ReadOnlyVariable2.h>
+
+#include <Guid/GlobalVariable.h>
+
+/**
+  Helper function to query whether the secure boot variable is in place.
+  For Project Mu Code if the PK is set then Secure Boot is enforced (there is no
+  SetupMode)
+
+  @retval     TRUE if secure boot is enabled, FALSE otherwise.
+**/
+BOOLEAN
+IsSecureBootOn()
+{
+  EFI_STATUS Status;
+  EFI_PEI_READ_ONLY_VARIABLE2_PPI *VarPpi = NULL;
+  UINTN PkSize = 0;
+
+  Status = PeiServicesLocatePpi(&gEfiPeiReadOnlyVariable2PpiGuid, 0, NULL, (VOID *)&VarPpi);
+  if (EFI_ERROR(Status)){
+    DEBUG((DEBUG_ERROR, "Failed to locate EFI_PEI_READ_ONLY_VARIABLE2_PPI. \n"));
+    return FALSE;
+  }
+
+  Status = VarPpi->GetVariable(VarPpi, EFI_PLATFORM_KEY_NAME, &gEfiGlobalVariableGuid, NULL, &PkSize, NULL);
+  if ((Status == EFI_BUFFER_TOO_SMALL) && (PkSize > 0) )
+  {
+    DEBUG((DEBUG_INFO, "%a - PK exists.  Secure boot on.  Pk Size is 0x%X\n", __FUNCTION__, PkSize));
+    return TRUE;
+  }
+  DEBUG((DEBUG_INFO, "%a - PK doesn't exist.  Secure boot off\n", __FUNCTION__));
+  return FALSE;
+}
 
 /**
   Module Entrypoint.
@@ -29,29 +64,17 @@
 EFI_STATUS
 EFIAPI
 DeviceStatePeiEntry(
-  IN EFI_HANDLE        ImageHandle,
-  IN EFI_SYSTEM_TABLE  *SystemTable
+  IN       EFI_PEI_FILE_HANDLE       FileHandle,
+  IN CONST EFI_PEI_SERVICES          **PeiServices
   )
 {
   DEVICE_STATE                  State;
   State = 0;
 
-  State |= DEVICE_STATE_SECUREBOOT_OFF;
-  State |= DEVICE_STATE_MANUFACTURING_MODE;
-  State |= DEVICE_STATE_DEVELOPMENT_BUILD_ENABLED;
-  State |= DEVICE_STATE_SOURCE_DEBUG_ENABLED;
-  State |= DEVICE_STATE_UNDEFINED;
-  State |= DEVICE_STATE_UNIT_TEST_MODE;
-  State |= DEVICE_STATE_MEM_PROTECTIONS_OFF;
-
-  State |= DEVICE_STATE_PLATFORM_MODE_0;
-  State |= DEVICE_STATE_PLATFORM_MODE_1;
-  State |= DEVICE_STATE_PLATFORM_MODE_2;
-  State |= DEVICE_STATE_PLATFORM_MODE_3;
-  State |= DEVICE_STATE_PLATFORM_MODE_4;
-  State |= DEVICE_STATE_PLATFORM_MODE_5;
-  State |= DEVICE_STATE_PLATFORM_MODE_6;
-  State |= DEVICE_STATE_PLATFORM_MODE_7;
+  if (!IsSecureBootOn())
+  {
+    State |= DEVICE_STATE_SECUREBOOT_OFF;
+  }
 
   AddDeviceState(State);
 
